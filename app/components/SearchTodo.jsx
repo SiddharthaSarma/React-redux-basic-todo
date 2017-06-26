@@ -1,18 +1,29 @@
 var React = require('react');
+var actions = require('../../actions/index');
+var connect = require('react-redux').connect;
 
 var SearchTodo = React.createClass({
-	searchTodo: function() {
-		var {searchTerm, showCompleted} = this.refs;
-		this.props.onSearchTodo(searchTerm.value, showCompleted.checked);
-	},
- 	render: function() {
+  render: function () {
+    var showCompleted = this.props.showCompleted;
+    var searchTerm = this.props.searchTerm;
+    var dispatch = this.props.dispatch;
     return (
       <div>
-        <input type="text" placeholder="search todo" ref="searchTerm" onChange={this.searchTodo}/>
-        <input type="checkbox" ref="showCompleted" onChange={this.searchTodo}/>Show completed
+        <input type="text" placeholder="search todo" value={searchTerm} ref="searchTerm"
+          onChange={() => {
+            dispatch(actions.searchTodo(this.refs.searchTerm.value));
+          }} />
+        <input type="checkbox" ref="showCompleted" onChange={() => {
+          dispatch(actions.toggleTodoCompleted());
+        }} />Show completed
       </div>
     );
   }
 });
 
-module.exports = SearchTodo;
+module.exports = connect((state) => {
+  return {
+    showCompleted: state.showCompleted,
+    searchTerm: state.searchTerm
+  }
+})(SearchTodo);
